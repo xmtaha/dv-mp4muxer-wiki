@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dolby Vision MP4 Rehberi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 p-4 md:p-8 min-h-screen flex flex-col items-center">
+
+    <div class="w-full max-w-3xl bg-gray-800 p-6 md:p-8 rounded-xl shadow-2xl">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-purple-400">Dolby Vision MP4 Oluşturma Rehberi</h1>
+            <p class="text-gray-400 mt-2">UHD Blu-ray kaynaklarınızdan Dolby Vision özellikli MP4 dosyaları oluşturmak için MP4Muxer komutunu kolayca hazırlayın.</p>
+        </header>
+
+        <section class="mb-8 p-6 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold text-purple-300 mb-3">Önemli Bilgiler ve Ön Hazırlık</h2>
+            <p class="text-gray-300 mb-2">
+                Bu araç, MP4Muxer komutunu oluşturmanıza yardımcı olur. Dosya işleme veya komut çalıştırma yapmaz.
+            </p>
+            <p class="text-gray-300 mb-2">Bu araç, <strong>SMΛCBΛSΛИKΛSΛP</strong>'ın rehberi temel alınarak oluşturulmuştur. Herhangi bir sorumluluk kabul edilmez.</p>
+
+            <p class="text-gray-300 mb-4">
+                <strong>Başlamadan Önce:</strong>
+                <ul class="list-disc list-inside text-gray-300 space-y-1 pl-4">
+                    <li>UHD Blu-ray .ISO dosyanızı veya klasörünüzü hazırlayın.</li>
+                    <li>Aşağıdaki araçları kullanarak gerekli katmanları ve ses dosyasını <strong class="text-purple-300">demux</strong> edin (çıkarın):
+                        <ul class="list-disc list-inside ml-6 space-y-1 mt-1">
+                            <li><strong>Temel Katman (BL):</strong> 4K HEVC video dosyası.</li>
+                            <li><strong>Geliştirme Katmanı (EL):</strong> 1080p Dolby Vision HEVC video dosyası.</li>
+                            <li><strong>Ses Dosyası:</strong> Tercihen AC3 (DD), E-AC3 (DDP), TrueHD veya DTS, DTS-HD MA.</li>
+                            <li><strong>İyi bir bilgisayar ve SSD disk kullanmanız işlem süresini kısaltacaktır.</strong></li>
+                        </ul>
+                    </li>
+                </ul>
+            </p>
+            <div class="mt-4">
+                <h3 class="text-lg font-medium text-purple-300 mb-2">Önerilen Araçlar (Demux için):</h3>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                    <a href="https://www.videohelp.com/software/eac3to" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-150 text-center">eac3to İndir</a>
+                    <a href="https://www.videohelp.com/software/tsMuxeR" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-150 text-center">tsMuxeR İndir</a>
+                    
+                </div>
+                 
+            </div>
+            <div class="mt-4">
+                <h3 class="text-lg font-medium text-purple-300 mb-2">Dolby Vision MP4 Oluşturma İçin:</h3>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                        <a href="https://github.com/DolbyLaboratories/dlb_mp4base/blob/master/bin/mp4muxer.exe" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-150 text-center">MP4Muxer İndir</a>
+                </div>
+                 
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold text-purple-300 mb-4">MP4Muxer Komut Oluşturucu</h2>
+            <form id="mp4muxerForm" class="space-y-6">
+                <div>
+                    <label for="mp4muxerPath" class="block text-sm font-medium text-gray-300 mb-1">MP4Muxer Program Yolu
+                        <span class="text-xs text-gray-500">(örn: C:\Tools\mp4muxer.exe veya sadece mp4muxer)</span>
+                         <div class="tooltip text-purple-400 cursor-pointer">[?]
+                            <span class="tooltiptext">MP4Muxer programının tam yolunu belirtin veya PATH ortam değişkeninizde tanımlıysa sadece adını yazın.</span>
+                        </div>
+                    </label>
+                    <input type="text" id="mp4muxerPath" name="mp4muxerPath" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="mp4muxer.exe">
+                </div>
+
+                <div>
+                    <label for="dvProfile" class="block text-sm font-medium text-gray-300 mb-1">Dolby Vision Profili <span class="text-red-500">*</span>
+                        <div class="tooltip text-purple-400 cursor-pointer">[?]
+                            <span class="tooltiptext">Kullanılacak Dolby Vision profilini seçin. Profil 7 genellikle FEL (Full Enhancement Layer) için kullanılır. Diğer profiller farklı senaryolar için olabilir.</span>
+                        </div>
+                    </label>
+                    <select id="dvProfile" name="dvProfile" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="4">Profil 4 (MEL - Minimal Enhancement Layer)</option>
+                        <option value="5">Profil 5</option>
+                        <option value="7" selected>Profil 7 (FEL - Full Enhancement Layer)</option>
+                        <option value="8">Profil 8.1 (HDR10 uyumlu)</option>
+                        <option value="8.2">Profil 8.2</option>
+                        <option value="8.4">Profil 8.4</option>
+                        <option value="9">Profil 9</option>
+                    </select>
+                </div>
+
+
+                <div>
+                    <label for="baseLayer" class="block text-sm font-medium text-gray-300 mb-1">Temel Katman (BL) HEVC Dosyası <span class="text-red-500">*</span>
+                        <div class="tooltip text-purple-400 cursor-pointer">[?]
+                            <span class="tooltiptext">Demux edilmiş 4K HEVC video dosyasının tam yolu (örn: C:\demux\bl.hevc).</span>
+                        </div>
+                    </label>
+                    <input type="text" id="baseLayer" name="baseLayer" required class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="örn: film_bl.hevc">
+                </div>
+
+                <div>
+                    <label for="enhancementLayer" class="block text-sm font-medium text-gray-300 mb-1">Geliştirme Katmanı (EL) HEVC Dosyası <span class="text-red-500">*</span>
+                        <div class="tooltip text-purple-400 cursor-pointer">[?]
+                            <span class="tooltiptext">Demux edilmiş 1080p Dolby Vision HEVC video dosyasının tam yolu (örn: C:\demux\el.hevc).</span>
+                        </div>
+                    </label>
+                    <input type="text" id="enhancementLayer" name="enhancementLayer" required class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="örn: film_el.hevc">
+                </div>
+
+                <div>
+                    <label for="audioFile" class="block text-sm font-medium text-gray-300 mb-1">Ses Dosyası <span class="text-red-500">*</span>
+                        <div class="tooltip text-purple-400 cursor-pointer">[?]
+                            <span class="tooltiptext">Demux edilmiş ses dosyasının tam yolu (örn: C:\demux\ses.ac3 veya C:\demux\audio.dts).</span>
+                        </div>
+                    </label>
+                    <input type="text" id="audioFile" name="audioFile" required class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="örn: ses.ac3">
+                </div>
+
+                <div>
+                    <label for="mediaLang" class="block text-sm font-medium text-gray-300 mb-1">Medya Dili <span class="text-red-500">*</span>
+                        <div class="tooltip text-purple-400 cursor-pointer">[?]
+                            <span class="tooltiptext">ISO 639-2 standardında 3 harfli dil kodu (örn: tur, eng, deu).</span>
+                        </div>
+                    </label>
+                    <input type="text" id="mediaLang" name="mediaLang" required class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="örn: tur">
+                </div>
+
+                <div>
+                    <label for="outputFile" class="block text-sm font-medium text-gray-300 mb-1">Çıktı Dosyası Adı <span class="text-red-500">*</span>
+                         <div class="tooltip text-purple-400 cursor-pointer">[?]
+                            <span class="tooltiptext">Oluşturulacak MP4 dosyasının adı ve isteğe bağlı yolu (örn: C:\output\filmim.mp4 veya sadece filmim.mp4).</span>
+                        </div>
+                    </label>
+                    <input type="text" id="outputFile" name="outputFile" required class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="örn: film_dv.mp4">
+                </div>
+                
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-150 text-lg">
+                    Komutu Oluştur
+                </button>
+            </form>
+        </section>
+
+        <section id="outputSection" class="hidden mt-8 p-6 bg-gray-700 rounded-lg">
+            <h2 class="text-xl font-semibold text-purple-300 mb-3">Oluşturulan Komut:</h2>
+            <div class="relative">
+                <textarea id="generatedCommand" readonly class="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg text-gray-200 h-32 resize-none focus:outline-none"></textarea>
+                <button id="copyCommand" class="absolute top-2 right-2 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-1 px-2 rounded-md transition-colors duration-150">
+                    Kopyala
+                </button>
+            </div>
+            <p class="text-sm text-gray-400 mt-3">
+                Yukarıdaki komutu kopyalayıp komut istemcinize (CMD, PowerShell, Terminal vb.) yapıştırarak çalıştırın.</p>
+        </section>
+
+        <footer class="mt-12 text-center text-sm text-gray-500">
+                        <p>xmtaha tarafından ❤️ ile kodlanmıştır. <strong>shareses.com</strong> için hazırlanmıştır.</p>
+        </footer>
+    </div>
+
+    <script>
+        const form = document.getElementById('mp4muxerForm');
+        const outputSection = document.getElementById('outputSection');
+        const generatedCommandTextarea = document.getElementById('generatedCommand');
+        const copyCommandButton = document.getElementById('copyCommand');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const mp4muxerPath = document.getElementById('mp4muxerPath').value.trim() || 'mp4muxer'; 
+            const dvProfile = document.getElementById('dvProfile').value; 
+            const baseLayer = document.getElementById('baseLayer').value.trim();
+            const enhancementLayer = document.getElementById('enhancementLayer').value.trim();
+            const audioFile = document.getElementById('audioFile').value.trim();
+            const mediaLang = document.getElementById('mediaLang').value.trim();
+            const outputFile = document.getElementById('outputFile').value.trim();
+
+            if (!baseLayer || !enhancementLayer || !audioFile || !mediaLang || !outputFile || !dvProfile) {
+                
+                const userMessageContainer = document.createElement('div');
+                userMessageContainer.style.position = 'fixed';
+                userMessageContainer.style.top = '20px';
+                userMessageContainer.style.left = '50%';
+                userMessageContainer.style.transform = 'translateX(-50%)';
+                userMessageContainer.style.backgroundColor = '#f8d7da';
+                userMessageContainer.style.color = '#721c24';
+                userMessageContainer.style.padding = '10px 20px';
+                userMessageContainer.style.borderRadius = '5px';
+                userMessageContainer.style.zIndex = '1000';
+                userMessageContainer.textContent = 'Lütfen tüm zorunlu alanları doldurun (* ile işaretli).';
+                document.body.appendChild(userMessageContainer);
+                setTimeout(() => {
+                    userMessageContainer.remove();
+                }, 3000);
+                return;
+            }
+
+            const quotePath = (path) => path.includes(' ') ? `"${path}"` : path;
+
+            const command = `${quotePath(mp4muxerPath)} --dv-profile ${dvProfile} --input-file ${quotePath(baseLayer)} --input-file ${quotePath(enhancementLayer)} --input-file ${quotePath(audioFile)} --media-lang ${mediaLang} --output-file ${quotePath(outputFile)}`;
+
+            generatedCommandTextarea.value = command;
+            outputSection.classList.remove('hidden');
+        });
+
+        copyCommandButton.addEventListener('click', function() {
+            generatedCommandTextarea.select(); 
+            generatedCommandTextarea.setSelectionRange(0, 99999); 
+
+            try {
+                navigator.clipboard.writeText(generatedCommandTextarea.value)
+                    .then(() => {
+                        copyCommandButton.textContent = 'Kopyalandı!';
+                        setTimeout(() => {
+                            copyCommandButton.textContent = 'Kopyala';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.warn("Modern kopyalama başarısız oldu, eski yönteme geçiliyor:", err);
+                        document.execCommand('copy');
+                        copyCommandButton.textContent = 'Kopyalandı!';
+                         setTimeout(() => {
+                            copyCommandButton.textContent = 'Kopyala';
+                        }, 2000);
+                    });
+            } catch (err) {
+                console.error("Kopyalama sırasında hata oluştu:", err);
+                copyCommandButton.textContent = 'Kopyala';
+            }
+        });
+    </script>
+
+</body>
+</html>
